@@ -1,0 +1,932 @@
+\section{LP Supervisors}
+
+The runLP implementation uses a hybrid approach to manage the regional
+system. North of Lake Okeechobee, an assessor coordinator routes water
+through the Upper Chain of Lakes, Kissimmee, Caloosahatchee and St
+Lucie river basins.  South of Lake Okeechobee, an LP supervisor routes
+water through the canal network in the EAA.  The LP supervisor uses a
+linear program (LP) solver to find an optimal set of structure
+releases that meets water supply and flood control needs in the EAA,
+subject to a series of basin storage and structure flow constraints.
+
+The {\tt <glpk\_supervise>} element contains the specifications
+required to build an independent LP model for the structures
+supervised by LP.  The attributes used specify administrative details
+such as the name of the LP model, input filenames, data formats, and
+optimization options are listed in Table \ref {attrdefs}.
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Parameter definitions for {\tt glpk\_supervise} supervisor. }\label{attrdefs}
+  \begin{tabular}{p{2.0cm}p{5.0cm}p{4.0cm}}                            \\[0.8ex]
+   attribute  & Definition                    & typical value          \\
+   \hline
+   label      & management label              & "LP\_supervise"        \\
+   modelName  & alternative label             &  "rsmbnLP"             \\ 
+   modelFile  & model definition filename     & "input/mse/lp/lp.mod"  \\
+   dataFile   & data specification filename   & "input/mse/lp/lp.dat"  \\
+   dataFormat & data specification format     & "tabbed"               \\
+   probFile   & optional output filename      & "none"                 \\
+   solnFile   & optional solution filename    & "none"                 \\ 
+   outputFile & optional output filename      & "none"                 \\
+   method     & optimization procedure method & "simplex"              \\
+   optimize   & optimization method           & "minimize"             \\
+   presolve   & presolve option               & "off"                  \\
+   msglevel   & message level                 & "1"                    \\
+   timelimit  & time limit                    & "60"                   \\
+   outfreq    & output frequency              & "1E6"                  \\
+   days       & days                          & "0"                    \\ 
+   hours      & hours                         & "0"                    \\
+   minutes    & minutes                       & "0"                    \\
+   \hline
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+
+The {\tt <glpk\_supervise>} element also defines the elements that
+exchange data between the LP supervisor and the RSM.  The {\tt
+  <varOut>} element takes the optimal structure flow computed by the
+LP supervisor and assigns it to the corresponding watermover in the
+RSM.  The {\tt <varIn>} element takes a state variable data from the
+RSM and assigns it to selected parameters in the LP supervisor.
+
+The LP model is defined in the file referenced by the modelFile
+attribute.  This file contains definitions for:
+\begin{enumerate}
+ 
+ \item BASIN and STRUCTURE sets \-- collections of basin and structure
+   members in the LP that are counterparts to respective waterbodies and
+   watermovers in the RSM;
+
+ \item general parameters \-- defines time step and unit conversions;
+
+ \item basin and structure parameters \-- terms whose value is
+   specified by RSM state variables through {\tt <varIn>} elements;
+   and
+
+ \item basin and structure decision variables \-- terms whose value
+   is computed by the LP solver.
+
+\end{enumerate}
+
+The parameter and decision variable terms are used to form the linear
+equations that define the objective function and a set of model
+constraints.  These linear equations are defined in the file
+referenced by the {\tt modelFile} attribute.
+
+Each member of the BASIN set has the following time variant
+parameters:
+
+\begin{enumerate}
+ 
+ \item storageInit \-- beginning of time step storage in the basin.
+
+ \item basintarget1 \-- basin storage target \#1.  Basin storage
+   deviations above and below target \# 1 storage are minimized.  Used
+   to push basin water levels up or down towards a target.
+
+ \item basintarget2 \-- basin storage target \#2.  Basin storage
+   deviations below target \# 2 are minimized.  Used to maintain
+   minimum water levels in the basin.
+
+ \item basintarget3 \-- basin storage target \#3.  Basin storage
+   deviations above target \# 3 are minimized.  Used to set the upper
+   limit of basin storage capacity.
+
+ \item wsDemand \-- water supply demand.  Water supply delivery
+   deviations from the demand target are minimized.
+
+ \item runoff \-- basin runoff.  Defines the boundary flow to each
+   basin.
+
+\end{enumerate}
+
+The initial state of each basin in the BASIN set is established in the
+LP model by initial storage, water supply demand and boundary flow.
+Water levels in the basin are ``pushed'' up or down to minimize
+deviations from specified storage targets. The LP supervisor pushes
+basin water levels up or down by coordinating releases through the
+basin's inlet and outlet structures.  Structure flow is limited by
+physical and design capacities, and regional management objectives
+expressed through constraints.
+
+The deviations associated with each of the basin parameter targets are
+weighted to reflect the priority of the respective target in the
+objective function.  The following weights are static and are
+specified for each member of the BASIN set:
+
+\begin{enumerate}
+ 
+ \item w\_target1Deficit \-- basin storage deviation below target \#1.
+
+ \item w\_target1Excess \-- basin storage deviation above target \#1.
+
+ \item w\_target2Deficit \-- basin storage deviations below target \#2.
+
+ \item w\_target3Excess \-- basin storage deviations above target \#3.
+
+ \item w\_demandDeficit \-- water supply delivery deviations from the
+   demand target.
+
+\end{enumerate}
+
+Each member of the STRUCTURE set is defined by its upstream and
+downstream basin and the following time variant parameters:
+
+\begin{enumerate}
+ 
+ \item maxFlow \-- maximum flow capacity of the structure.
+
+ \item minflow \-- minimum flow target.  Deviations from this target
+   are minimized.
+
+ \item manCon \-- management constraint.  Sets the upper limit of
+   allowable flow through the structure.
+
+\end{enumerate}
+
+Deviations from the minimum flow target are weighted globally for all
+structures by single w\_minFlowDev parameter.  Each structure in the
+STRUCTURE set is further defined by the following static parameters:
+ 
+\begin{enumerate}
+ 
+ \item name \-- structure name (usually the label of the corresponding watermover).
+
+ \item designCap \-- structure design capacity.
+
+ \item useManCon \-- switch that controls if the optional managed
+   constraint parameter (manCon) is used.
+
+ \item w\_flow \-- structure flow weight.  Used to penalize flow
+   through selected structures.
+
+\end{enumerate}
+
+
+\subsection{Objective Function} \label{objectiveFunction}
+
+The LP ``solves'' by minimizing its objective function, subject to
+model constraints.  The objective function includes flow and deviation
+terms for all the basin and structure members in the BASIN and
+STRUCTURE sets:
+
+\begin{equation}
+ \begin{split}
+  & \textrm { minimize objective } : \\
+  & \textrm { sum \{ i in BASIN \} (}   \\
+  & \quad \textrm { w\_target1Excess [i] * target1Excess [i] } + \\
+  & \quad \textrm { w\_target1Deficit [i] * target1Deficit [i] } +  \\
+  & \quad \textrm { w\_target2Deficit [i] * target2Deficit [i] } + \\
+  & \quad \textrm { w\_demandDeficit [i]  * demandDeficit [i] } + \\
+  & \quad \textrm { w\_target3Excess [i]  * target3Excess [i] )} + \\
+  & \textrm { sum  \{ (i,j) in STRUCTURE \} } \textrm { ( w\_flow [i,j] * flow [i,j] ) }+ \\
+  & \textrm { sum  \{ (i,j) in STRUCTURE \} } \textrm { ( w\_minFlowDev * minFlowDev [i,j] ) }
+ \end{split}
+\end{equation}
+
+The weight factors in the objective function static parameters defined
+by the user.  The flow and target deviation terms are decision
+variables that are computed by the LP solver.  These decision
+variables are also used to form the linear equations that define model
+constraints.
+
+The objective function minimizes the summation of:
+
+\begin{enumerate}
+ 
+ \item deviations from basin storage targets, 
+
+ \item deviations from water supply demand targets, 
+
+ \item structure flow penalties, and
+
+ \item deviations from structure minimum flows.
+
+\end{enumerate}
+
+A target or penalty term can be dropped from the objective function by
+setting their corresponding weight factor to 0.0.  Likewise, the
+priority of a target or penalty term can be elevated by increasing its
+weight factor relative to the weight factors to assigned to other
+targets and penalty terms.
+
+\subsection{Model Constraints} 
+
+Model constraints are linear equations that use decision variable
+terms.  The following decision variables are computed by the solver
+for every member of the BASIN set:
+
+\begin{enumerate}
+ 
+ \item storageFinal \-- end of time step basin storage 
+ \item target1Excess \-- volume of basin storage in above target \#1
+ \item target1Deficit \-- volume of storage below target \#1
+ \item target2Deficit \-- volume of storage below target \#2
+ \item target3Excess \-- volume of storage above target \#3
+ \item demandDeficit \-- volume of water supply deficit
+ \item wsDemandActual \-- volume of water supply delivered
+
+\end{enumerate}
+
+All basin decision variables are restricted to values greater than or
+equal to 0.0.
+
+The following decision variables are computed by the solver for every
+member of the STRUCTURE set:
+
+\begin{enumerate}
+ 
+ \item flow \-- volume of flow from upstream to downstream basin
+ \item minFlowDev \-- deviation from minimum flow target
+
+The flow decision variable is defined for every member of STRUCTURE
+set and is restricted to values greater than or equal to 0.0.
+
+\end{enumerate}
+
+Model constraints fall into several broad categories: continuity,
+basin constraints, flow constraints and canal specific constraints.
+Each are entered into the LP solver as linear equations comprised of
+parameter and decision variables.  The following sections describe
+each category in more detail.
+
+
+\subsubsection{Continuity constraint}
+
+The conservation of mass constraint includes terms for beginning of
+time step basin storage (storageInit), runoff, water supply delivery
+(wsDemandActual), structure inflow and outflow:
+
+\begin{equation}
+ \begin{split}
+   \textrm {subject to } & MassConservation \textrm { \{ i in BASIN \}} : \\
+   \textrm {storageFinal [i]} & = \textrm { storageInit [i]} \\
+                   & + \textrm {runoff [i] * unitFlow} \\
+                   & - \textrm {wsDemandActual [i] * unitFlow} \\
+                   & + \textrm {sum \{ (j,i) in STRUCTURE \} }  \textrm {flow [j,i]} \\ 
+                   & - \textrm {sum \{ (i,j) in STRUCTURE \} }  \textrm {flow [i,j]} 
+ \end{split}
+\end{equation}
+
+where the values for storageInit and runoff are set by {\tt <varIn> }
+elements.  The \textrm {sum \{ (j,i) in STRUCTURE \} \{flow [i,j]\}} terms
+sum structure inflows and outflows for the respective basins.  The
+wsDemandActual term is based on the demand deviation from water supply
+demand parameter:
+
+\begin{equation}
+ \begin{split}
+  \textrm { subject to } DemandDeviation  & \textrm { \{ i in BASIN \} } : \\
+  \textrm { wsDemandActual [i] } & =  \textrm { wsDemand [i] - demandDeficit [i] } 
+ \end{split}
+\end{equation}
+
+The demandDeficit term is minimized through its inclusion in the
+objective function.  
+
+\subsubsection {Basin Constraints }
+
+Basin water levels are managed by minimizing deviations from storage
+targets.  Target \#1 is designed to minimize deviations above and
+below the target:
+
+\begin{equation}
+ \begin{split}
+  \textrm { subject to } Target1Deviation  & \textrm { \{ i in BASIN \} } : \\
+  \textrm { storageFinal [i] } & = \textrm { basinTarget1 [i] + target1Excess [i] - target1Deficit [i] }
+ \end{split}
+\end{equation} 
+
+where the basinTarget1 parameter is set by a {\tt <varIn> } element.
+The target1Excess and target1Deficit terms are both weighted and
+minimized through their inclusion in the objective function.  Target
+\#2 is designed to minimize deviations below the target:
+
+\begin{equation}
+ \begin{split}
+  \textrm { subject to } Target2Deviation  & \textrm { \{ i in BASIN \} } : \\
+  \textrm { storageFinal [i] } & \ge \textrm { basinTarget2 [i] - target2Deficit [i] }
+ \end{split}
+\end{equation}
+
+where the basinTarget2 parameter is set by a {\tt <varIn> } element.
+The target2Deficit term is weighted and minimized through its
+inclusion in the objective function.  Target \#3 is designed to
+minimize deviations above the target:
+
+\begin{equation}
+ \begin{split}
+  \textrm { subject to } Target3Deviation & \textrm { \{ i in BASIN \} } : \\
+  \textrm { storageFinal [i] } & \le \textrm { basinTarget3 [i] + target3Excess [i] }
+ \end{split}
+\end{equation}
+
+where the basinTarget3 parameter is set by a {\tt <varIn> } element.
+The target3Excess term is weighted and minimized through its inclusion
+in the objective function.
+
+\subsubsection {Flow Constraints }
+
+Structure flow is constrained by minimum flow, maximum flow and
+management constraints.  The minimum flow constraint is implemented as
+a target by minimizing the deviation between minflow and flow:
+
+\begin{equation}
+ \begin{split}
+  \textrm { subject to } MinimumFlow & \textrm { \{ (i,j) in STRUCTURE \} } : \\
+  \textrm { minFlowDev [i,j] } & \ge  \textrm { minflow [i,j] * unitFlow - flow [i,j] } 
+ \end{split}
+\end{equation}
+
+where the minflow parameter is set by a {\tt <varIn> } element.  The
+minFlowDev and flow terms are minimized through their inclusion in the
+objective function.  The maximum flow constraint sets an upper bound
+on structure flow:
+
+\begin{equation}
+ \begin{split}
+    \textrm {subject to } FlowCapacity & \textrm { \{ (i,j) in STRUCTURE \}} : \\ 
+    \textrm {flow [i,j]} & \le \textrm {maxFlow [i,j] * unitFlow} 
+ \end{split}
+\end{equation}
+
+where the maxFlow parameter is set by a {\tt <varIn> } element.
+Managed constraints are applied only if the useManCon value for the
+respective structure is set to 1.  When applied, the managed
+constraint sets an upper bound on structure flow:
+
+\begin{equation}
+ \begin{split}
+    \textrm {subject to } & ManagedConstraint \textrm { \{ (i,j) in STRUCTURE \} } :  \\ 
+    &\textrm {if useManCon [i,j]} \\ 
+    &\textrm {then flow [i,j]} \le \textrm { manCon [i,j] * unitFlow } 
+ \end{split}
+\end{equation}
+
+where the manCon parameter is set by a {\tt <varIn> } element and
+useManCon value is set in the static model data block for structures.
+
+\subsubsection {Canal Specific Constraints }
+
+The constraints applied to the members of the BASIN and STRUCTURE sets
+are generically applied to all the basins and structures in their
+respective sets.  Sometimes it is desirable to apply constraints to
+selected basins and structures.  For example, five basins discharge
+their runoff into the North New River \-- Hillsboro Canal. If the
+total runoff exceeds the outlet flow capacity of the canal or the
+downstream storage capacity, it is desirable to prorate the discharge
+uniformly from each of the five basins.  The following template is
+used as a constraint for each basin connected to the North New River
+\-- Hillsboro Canal:
+
+\begin{equation}
+ \begin{split}
+  \textrm { subject to } &subbasinMin: \\
+  &\textrm { SubbasinMin } = \textrm {  minflow['subbasin', 'nnrHills'] * unitFlow } \\  
+  \textrm { subject to } &subbasinDev: \\
+  &\textrm { SubbasinMin } = \textrm { flow['subbasin', 'nnrHills'] + SubbasinExcess } \\ 
+  \textrm { subject to } &subbasinExcess: \\
+  &\textrm { SubbasinExcess } =\textrm {  minflow['subbasin', 'nnrHills'] * ExcessRatioNNR }
+ \end{split}
+\end{equation}
+
+where the name of the basin is substituted for \textrm {'subbasin''}
+and \textrm {'Subbasin''}.  The $subbasinMin$ constraint sets \textrm
+{SubbasinMin} equal to the minflow for a specific structure.  The
+$subbasinDev$ constraint computes the flow deviation from \textrm
+{SubbasinMin} (i.e., \textrm {SubbasinExcess}).  The $subbasinExcess$
+constraint requires that \textrm {SubbasinExcess} be equivalent to a
+fraction of \textrm {SubbasinMin} (\textrm {ExcessRatioNNR}).  Since
+\textrm {ExcessRatioNNR} is the same for all the basins connected to
+the North New River \-- Hillsboro Canal, the constraints will enforce uniform
+prorating for all the basin runoff.  
+
+The following decision variables were defined for canal specific
+constraints applied to the North New River \-- Hillsboro and Upper
+Miami Canals:
+
+\begin{enumerate}
+ \item SSDDExcess \-- excess runoff from South Shore Drainage District
+   to North New River \-- Hillsboro Canal
+ \item SSDDMin \-- minimum flow from South Shore Drainage District to
+   North New River \-- Hillsboro Canal
+ \item ClosterExcess \-- excess runoff from Closter Farms to North New
+   River \-- Hillsboro Canal
+ \item ClosterMin \-- minimum flow from Closter Farms to North New River \--
+   Hillsboro Canal
+ \item ESWCDExcess \-- excess runoff from East Shore Water Control
+   District to North New River \-- Hillsboro Canal
+ \item \-- ESWCDMin \-- minimum flow from East Shore Water Control
+   District to North New River \-- Hillsboro Canal
+ \item S5AExcess \-- excess runoff from S5A basin to North New River
+   \-- Hillsboro Canal
+ \item \-- S5AMin \-- minimum flow from S5A basin to North New River
+   \-- Hillsboro Canal
+ \item NNRHillsExcess \-- excess runoff from North New River \-- Hillsboro
+   Basin to North New River \-- Hillsboro Canal
+ \item NNRHillsMin \-- minimum flow from North New River \-- Hillsboro
+   Basin to North New River \-- Hillsboro Canal
+ \item MiamiBasinExcess \-- excess runoff from Miami Basin to Upper
+   Miami Canal
+ \item MiamiBasinMin \-- minimum flow from Miami Basin to Upper Miami
+   Canal
+ \item SSDDMiaExcess \-- excess runoff from South Shore Drainage
+   District to Upper Miami Canal
+ \item SSDDMiaMin \-- minimum flow from South Shore Drainage District
+   to Upper Miami Canal
+ \item SFCDExcess \-- excess runoff from South Florida Conservancy
+   District to Upper Miami Canal
+ \item SFCDMin \-- minimum flow from South Florida Conservancy
+   District to Upper Miami Canal
+ \item L1EExcess \-- excess runoff from L1E Basin to Upper Miami Canal
+ \item L1EMin \-- minimum flow from L1E Basin to Upper Miami Canal
+ \item ExcessRatioNNR \-- excess ratio applied to basin runoff
+   discharged to North New River \-- Hillsboro Canal
+ \item ExcessRatioMiami \-- excess ratio applied to basin runoff
+   discharged to Upper Miami Canal
+\end{enumerate}
+
+
+\subsection{LP Model Data}
+
+The initial condition for each basin is established for the LP by
+initial basin storage, boundary flow (runoff), water supply demand and
+target storage levels \#1, \#2 and \#3.  All these parameter values
+are updated daily for each basin by their respective {\tt <varIn>}
+elements. By convention, each member of the BASIN set is entered into
+a data block with initial parameter values for each of the respective
+basins.  Likewise, each member of the STRUCTURE set is entered into a
+data block with the structure's upstream and downstream basin name and
+initial parameter values for each of the respective structures.  This
+data structure simplifies the way parameters are updated in the RSM.
+Since the values from the corresponding {\tt <varIn>} entries
+overwrite the initial parameter values in the data blocks, the actual
+values for the initial basin and structure parameters are disregarded.
+The parameter data blocks for BASIN and STRUCTURE sets are specified
+in the file referenced by the {\tt dataFile} attribute.
+
+The list of members in the BASIN set and the source of data for each
+basin parameter are presented in Table \ref{TVbasinPara}.  Possible
+sources of data for basin parameter values include:
+
+\begin{enumerate}
+ 
+ \item wbhead \-- beginning of time step head simulated for the
+   respective basin by the HSE.
+
+ \item rulecurve \-- schedule specified in the MSE.
+
+ \item constant \-- value specified in {\tt <varIn>} element.
+
+ \item external \-- pre-processed times series data stored in DSS file.
+
+ \item bcflows \-- summation of boundary condition flows computed by
+   an HSE assessor.
+
+\end{enumerate}
+
+The maxFlow, minflow and manCon parameter values for each structure
+are updated daily by their respective {\tt <varIn>} elements.  The
+list of members in the STRUCTURE set and the source for each parameter
+are presented in Tables \ref {strParaTs_1} and \ref {strParaTs_2}.
+Possible sources for structure parameters values include:
+
+\begin{enumerate}
+ 
+ \item wmcap \-- maximum flow capacity computed by the HSE.
+
+ \item assessor (FC) \-- flood control requirement computed by an {\tt
+   <AssessorCoordinator> } flood control assessor.
+
+ \item assessor (WS) \-- water supply requirement computed by an {\tt
+   <AssessorCoordinator> } water supply assessor.
+
+ \item constant \-- value specified in {\tt <varIn>} element.
+
+ \item external \-- pre-processed times series data stored in DSS
+   file.
+
+\end{enumerate}
+
+The LP data file is also used to specify values for static basin and
+structure parameters.  The static basin parameters used to weight
+deviations from basin storage and water supply targets are listed in
+Table \ref {StaticbasinPara}.  The static structure parameters used to
+define structure name, design capacity, optional use of manCon's and
+structure flow penalty are listed in Tables \ref{strParaConst_1}
+and \ref{strParaConst_2}.
+
+\subsection {Optimization strategies}
+
+\subsubsection {Canal}
+
+Canals in the EAA are assumed to provide no local storage, which means
+inflow must equal outflow for each time step.  This is accomplished it
+the LP by by placing a high penalty (100) on deviations above and
+below target \#1 storage for each canal in the EAA.  Target \#1
+storage is computed by the respective {\tt <wbmonitor>}, based on a
+target water level that coincides with the canal's {\tt fcLevel} and
+{\tt maintLevel}.
+
+\subsubsection {Service Area with HPM}
+
+The hydrology for a service area basin is simulated by a hydrologic
+process module (HPM) in RSM.  Assessors quantify the water supply and
+flood control requirements for the basin and distribute the
+requirements to the basin's inlets and outlets.  The water supply
+requirement for an inlet is retrieved through a monitor ({\tt
+  <qpackmonitor comp="ws" attr="req">}) and entered as a minflow and
+maxFlow constraint on the corresponding structure in the LP.  Setting
+minflow and maxFlow to the same value ensures that the water supply
+requirement will be met (subject to capacity and supply constraints),
+and the LP will not divert additional flow to the basin for storage or
+as a pass through to meet downstream needs.  Likewise, the flood
+control requirement for an outlet is retrieved through a monitor {\tt
+  <qpackmonitor comp="ws" attr="req">} and entered as a minflow and
+maxFlow constraint on the corresponding structure in the LP.  Setting
+the minflow and maxFlow to the same value ensures that the flood
+control flood control needs of the basin are meet, subject to capacity
+and storage constraints, and the LP will not attempt to use basin
+storage or use the basin as a pass through to to meet water supply
+needs elsewhere.
+
+The maxFlow constraint is entered into the LP as an inequality,
+thereby guaranteeing the flow will not exceed maxFlow.  The minflow
+constraint is entered as a target and the deviation from the target is
+minimized.  The penalty for missing the minflow target is universally
+set to 10.
+
+\subsubsection {Service Area \-- without HPM}
+
+The hydrology for some service area basins is simulated by other
+models (e.g., SFWMM, AFSIRS\--WATBAL, etc).  The water supply and
+flood control requirements for the basin's inlets and outlets are
+preprocessed and retrieved through a monitor ({\tt <dssmonitor>}) and
+entered as a minflow and maxFlow constraint on the corresponding
+structure in the LP.  As with service areas with HPM's, minflow and
+maxFlow values for the inlets and outlets are set to ensure
+requirements are met and the basin is not used as a reservoir or as a
+pass through facility.  Unlike basins with HPM's, water supply
+delivered to the basin do not have an HPM to remove the water from
+the RSM model domain.  Service areas without HPM's use on a demandNode
+to remove the water supply delivery from the RSM domain.  The minflow
+and maxFlow value for the demandNode is set to the same value as the
+water supply requirement as the basin inlets.
+
+by a hydrologic process module (HPM) in RSM.  Assessors quantify the
+water supply and flood control requirements for the basin and
+distribute the requirements to the basin's inlets and outlets.  The
+water supply requirement for an inlet is retrieved through a monitor
+({\tt <qpackmonitor comp="ws" attr="req">}) and entered as a minflow
+and maxFlow constraint on the corresponding structure in the LP.
+Setting minflow and maxFlow to the same value ensures that the water
+supply requirement will be met (subject to capacity and supply
+constraints), and the LP will not divert additional flow to the basin
+for storage or as a pass through to meet downstream needs.  Likewise,
+the flood control requirement for an outlet is retrieved through a
+monitor {\tt <qpackmonitor comp="ws" attr="req">} and entered as a
+minflow and maxFlow constraint on the corresponding structure in the
+LP.  Setting the minflow and maxFlow to the same value ensures that
+the flood control flood control needs of the basin are meet, subject
+to capacity and storage constraints, and the LP will not attempt to
+use basin storage or use the basin as a pass through to to meet water
+supply needs elsewhere.
+
+The maxFlow constraint is entered into the LP as an inequality,
+thereby guaranteeing the flow will not exceed maxFlow.  The minflow
+constraint is entered as a target and the deviation from the target is
+minimized.  The penalty for missing the minflow target is universally
+set to 10.
+
+
+\subsubsection {Stormwater Treatment Area}
+ * Canal storage is constant, i.e., inflow equals outflow for each time step.  This enforced by  
+
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Example of the LP time variant basin parameters. }\label{TVbasinPara}
+  \begin{tabular}{p{2.3cm}p{1.8cm}p{1.8cm}p{1.8cm}p{1.8cm}p{1.8cm}p{1.8cm}}         \\[0.8ex]
+   basin          &storageInit &target1   &target2   &target3   &wsDemand &runoff   \\
+  \hline
+  lo              &wbhead      &rulecurve &rulecurve & 1000     & 0       & 0       \\
+  L8              &wbhead      & 10       & 10       & 1000     & 0       & 0       \\
+  C51W            &wbhead      & 10       & 10       & 1000     & 0       & 0       \\
+  C51             &wbhead      & 10       & 10       & 1000     & 0       & 0       \\
+  L10L12          &wbhead      & 9.5      & 9.5      & 1000     & 0       & 0       \\
+  nnrHills        &wbhead      & 8        & 8        & 1000     & 0       & 0       \\
+  umiami          &wbhead      & 8.5      & 8.5      & 1000     & 0       & 0       \\
+  lmiami          &wbhead      & 8        & 8        & 1000     & 0       & 0       \\
+  L5E             &wbhead      & 9        & 9        & 1000     & 0       & 0       \\
+  L3Canal         &wbhead      & 8        & 8        & 1000     & 0       & 0       \\
+  L8basin         &wbhead      & 8        & 8        & 1000     & 0       &external \\
+  C51Basin        &wbhead      & 8        & 8        & 1000     & 0       &external \\
+  C51WBasin       &wbhead      & 8        & 8        & 1000     & 0       &external \\
+  S5ABasin        &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  ebwcd           &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  eswcd           &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  closter         &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  ssdd            &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  sfcd            &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  NnrHillsBasin   &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  miamiBasin      &wbhead      & 5        & -5       & 1000     & 0       & 0       \\
+  rotenberger     &wbhead      &rulecurve &rulecurve & 1000     & 0       &bcflows  \\
+  holeyland       &wbhead      & 13       &rulecurve & 1000     & 0       &bcflows  \\
+  L1EBasin        &wbhead      & 25       & 10       & 1000     & 0       & 0       \\
+  L2CBasin        &wbhead      & 25       & 10       & 1000     & 0       & 0       \\
+  annexBasin      &wbhead      & 25       & 10       & 1000     & 0       & 0       \\
+  ussugarUnit2    &wbhead      & 25       & 10       & 1000     & 0       & 0       \\
+  bigCypRes       &wbhead      & 25       & 10       & 1000     & 0       & 0       \\
+  STA1InflowCanal &wbhead      & 16.5     & 16.5     & 1000     & 0       & 0       \\
+  sta1e           &wbhead      & 15.565   & 14.815   & 18.315   & 0       &bcflows  \\
+  sta1w           &wbhead      & 11.06428 & 10.31428 & 14.31428 & 0       &bcflows  \\
+  STA2InflowCanal &wbhead      & 10       & 10       & 1000     & 0       & 0       \\
+  sta2            &wbhead      & 11.41    & 10.6     & 14.6     & 0       &bcflows  \\
+  sta34sc         &wbhead      & 8        & 8        & 1000     & 0       & 0       \\
+  sta34           &wbhead      & 10.72    & 9.97     & 13.97    & 0       &bcflows  \\
+  sta5            &wbhead      & 13.83    & 12.63    & 16.63    & 0       &bcflows  \\
+  sta6            &wbhead      & 14.07    & 13.28    & 17.28    & 0       &bcflows  \\
+  wca1            &wbhead      & 20       & 7        & 1000     & 0       & 0       \\
+  wca2a           &wbhead      & 20       & 7        & 1000     & 0       & 0       \\
+  wca3a           &wbhead      & 20       & 7        & 1000     & 0       & 0       \\
+  dummyLake       &wbhead      & 0        & 0        & 1000     & 0       & 0       \\
+  \hline
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Example of the LP static basin parameter values. }\label{StaticbasinPara}
+  \begin{tabular}{p{2.5cm}p{2.2cm}p{2.2cm}p{2.2cm}p{2.2cm}p{2.2cm}}                  \\[0.8ex]
+   basin          &w\_target1Deficit &w\_target1Excess  &w\_target3Excess &w\_target2Deficit &w\_demandDeficit \\
+  \hline 
+  lo              &   0         &    0          &    0         &     0         &    0 \\
+  L8              & 100         &  100          &    0         &     0         &    0 \\
+  C51W            & 100         &  100          &    0         &     0         &    0 \\
+  C51             & 100         &  100          &    0         &     0         &    0 \\
+  L10L12          & 100         &  100          &    0         &     0         &    0 \\
+  nnrHills        & 100         &  100          &    0         &     0         &    0 \\
+  umiami          & 100         &  100          &    0         &     0         &    0 \\
+  lmiami          & 100         &  100          &    0         &     0         &    0 \\
+  L5E             & 100         &  100          &    0         &     0         &    0 \\
+  L3Canal         & 100         &  100          &    0         &     0         &    0 \\
+  L8basin         & 100         &  100          &    0         &     0         &    0 \\
+  C51Basin        & 100         &  100          &    0         &     0         &    0 \\
+  C51WBasin       & 100         &  100          &    0         &     0         &    0 \\
+  S5ABasin        &   0         &    0          &    0         &     0         &    0 \\
+  ebwcd           &   0         &    0          &    0         &     0         &    0 \\
+  eswcd           &   0         &    0          &    0         &     0         &    0 \\
+  closter         &   0         &    0          &    0         &     0         &    0 \\
+  ssdd            &   0         &    0          &    0         &     0         &    0 \\
+  sfcd            &   0         &    0          &    0         &     0         &    0 \\
+  NnrHillsBasin   &   0         &    0          &    0         &     0         &    0 \\
+  miamiBasin      &   0         &    0          &    0         &     0         &    0 \\
+  rotenberger     &   0         &    1          &  100         &   100         &    0 \\
+  holeyland       &   0         &    1          &  100         &   100         &    0 \\
+  L1EBasin        &   0         &    0          &    0         &     0         &    0 \\
+  L2CBasin        &   0         &    0          &    0         &     0         &    0 \\
+  annexBasin      &   0         &    0.001      &    0         &     0         &    0 \\
+  ussugarUnit2    &   0         &    0.001      &    0         &     0         &    0 \\
+  bigCypRes       &   0         &    0          &    0         &     0         &    0 \\
+  STA1InflowCanal & 100         &  100          &    0         &     0         &    0 \\
+  sta1e           &   0         &    0.001      &  100         &   100         &    0 \\
+  sta1w           &   0         &    0.001      &  100         &   100         &    0 \\
+  STA2InflowCanal & 100         &  100          &    0         &     0         &    0 \\
+  sta2            &   0         &    0.001      &  100         &   100         &    0 \\
+  sta34sc         & 100         &  100          &    0         &     0         &    0 \\
+  sta34           &   0         &    0.01       &  100         &   100         &    0 \\
+  sta5            &   0         &    1          &  100         &   100         &    0 \\
+  sta6            &   0         &    1          &  100         &   100         &    0 \\
+  wca1            &   0         &    0          &    0         &     0         &    0 \\
+  wca2a           &   0         &    0          &    0         &     0         &    0 \\
+  wca3a           &   0         &    0          &    0         &     0         &    0 \\
+  dummyLake       &   0         &    0          &    0         &     0         &    0 \\
+  \hline
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Example of the LP time varying structure parameter values (Part 1). }\label{strParaTs_1}
+  \begin{tabular}{p{2.5cm}p{2.0cm}p{2.0cm}p{2.0cm}}            \\[0.8ex]
+  structure        &maxFlow         &minflow          &manCon  \\
+  \hline
+  C10A             &wmcap           &assessor (FC)    & 100000  \\
+  S352             &wmcap           &assessor (FC)    & 100000  \\
+  S351             &wmcap           &assessor (FC)    & 100000  \\
+  S354             &wmcap           &assessor (FC)    & 100000  \\
+  C10              &assessor (WS)   &assessor (WS)    & 100000  \\
+  C12              &assessor (WS)   &assessor (WS)    & 100000  \\
+  C12A             &assessor (WS)   &assessor (WS)    & 100000  \\
+  C4A              &assessor (WS)   &assessor (WS)    & 100000  \\
+  S236             &assessor (WS)   &assessor (WS)    & 100000  \\
+  S5AE             &wmcap           & 0               & 100000  \\
+  L8canal2basin    &assessor (WS)   &assessor (WS)    & 100000  \\
+  CWPB2            &external        &external         & 100000  \\
+  S155A            &wmcap           & 0               & 100000  \\
+  C51Wcanal2basin  &assessor (WS)   &assessor (WS)    & 100000  \\
+  S319             &wmcap           & 0               & assessor\\
+  C51canal2basin   &assessor (WS)   &assessor (WS)    & 100000  \\
+  S155             &wmcap           & 0               & 100000  \\
+  S5A              &wmcap           & 0               & 100000  \\
+  L10L12toS5ABasin &assessor (WS)   &assessor (WS)    & 100000  \\
+  S2               &wmcap           & 0               &assessor \\
+  G371             &wmcap           & 0               & 100000  \\
+  nnr2nnrHills     &assessor (WS)   &assessor (WS)    & 100000  \\
+  S6               &wmcap           & 0               & 100000  \\
+  G370             &wmcap           & 0               & 100000  \\
+  S3               &wmcap           & 0               &assessor \\
+  G373             &wmcap           & 0               & 100000  \\
+  mc2miaBasin      &assessor (WS)   &assessor (WS)    & 100000  \\
+  G372             &wmcap           & 0               & 100000  \\
+  G410             &wmcap           & 0               & 100000  \\
+  L4toBigCypRes    &assessor (WS)   &assessor (WS)    & 100000  \\
+  G507             &wmcap           & 0               & 100000  \\
+  s8               &wmcap           &external         & 100000  \\
+  L4gap            &wmcap           & 0               & 100000  \\
+  S7               &wmcap           &external         & 100000  \\
+  S150             &wmcap           &external         & 100000  \\
+  G407             &wmcap           & 0               & 100000  \\
+  G353             &wmcap           & 0               & 100000  \\
+  \hline                                                                            
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Example of the LP time varying structure parameter values (Part 2). }\label{strParaTs_2}
+  \begin{tabular}{p{2.8cm}p{2.0cm}p{2.0cm}p{2.0cm}}                \\[0.8ex]
+  structure        &maxFlow           &minflow          &manCon    \\
+  \hline
+  basin2L8canal    &assessor (FC)     &assessor (FC)    & 100000   \\
+  L8DemandNode     &assessor (WS)     &assessor (WS)    & 100000   \\
+  basin2C51Wcanal  &assessor (FC)     &assessor (FC)    & 100000   \\
+  C51WDemandNode   &assessor (WS)     &assessor (WS)    & 100000   \\
+  basin2C51canal   &assessor (FC)     &assessor (FC)    & 100000   \\
+  C51DemandNode    &assessor (WS)     &assessor (WS)    & 100000   \\
+  S5ABasin2L10L12  &assessor (FC)     &assessor (FC)    & 100000   \\
+  S5ABasin2hills   &assessor (FC)     &assessor (FC)    & 100000   \\
+  C10bp            &assessor (FC)     &assessor (FC)    & 100000   \\
+  ebps             &assessor (FC)     &assessor (FC)    & 100000   \\
+  C12bp            &assessor (FC)     &assessor (FC)    & 100000   \\
+  esps             &assessor (FC)     &assessor (FC)    & 100000   \\
+  C12Abp           &assessor (FC)     &assessor (FC)    & 100000   \\
+  cfps             &assessor (FC)     &assessor (FC)    & 100000   \\
+  C4Abp            &assessor (FC)     &assessor (FC)    & 100000   \\
+  sbpsrips         &assessor (FC)     &assessor (FC)    & 100000   \\
+  sswestps         &assessor (FC)     &assessor (FC)    & 100000   \\
+  S236bp           &assessor (FC)     &assessor (FC)    & 100000   \\
+  sfd5eps          &assessor (FC)     &assessor (FC)    & 100000   \\
+  nnrHills2nnr     &assessor (FC)     &assessor (FC)    & 100000   \\
+  G328             &assessor (FC)     &assessor (FC)    & 100000   \\
+  miaBasin2mc      &assessor (FC)     &assessor (FC)    & 100000   \\
+  G402             &wmcap             & 0               & 100000   \\
+  holeyland2lmiami &wmcap             & 0               & 100000   \\
+  G136             &assessor (FC)     &assessor (FC)    & 100000   \\
+  G406             &assessor (FC)     &assessor (FC)    & 100000   \\
+  G343SUM          &assessor (FC)     &assessor (FC)    & 100000   \\
+  usso             &assessor (FC)     &assessor (FC)    & 100000   \\
+  G600             &assessor (FC)     &assessor (FC)    & 100000   \\
+  G311             &wmcap             & 0               & 100000   \\
+  G302             &wmcap             & 0               & 100000   \\
+  G300G301         &wmcap             & 0               & 100000   \\
+  S362             &wmcap             & 0               & 100000   \\
+  G251G310         &wmcap             & 0               & 100000   \\
+  sta2in           &wmcap             & 0               & 100000   \\
+  G338             &wmcap             & 0               & 100000   \\
+  G339             &wmcap             & 0               & 100000   \\
+  G335             &wmcap             & 0               & 100000   \\
+  G372HL           &wmcap             & 0               & assessor \\
+  g380             &wmcap             & 0               & 100000   \\
+  sta34out         &wmcap             & 0               & assessor \\
+  G344             &wmcap             & 0               & assessor \\
+  sta6out          &wmcap             & 0               & assessor \\
+  G300G301bf       &wmcap             & 0               & 100000   \\
+  \hline                                                                            
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Example of the LP constant structure parameter values (Part 1). }\label{strParaConst_1}
+  \begin{tabular}{p{2.5cm}p{2.5cm}p{2.5cm}p{1.8cm}p{1.5cm}p{1.5cm}}\\[0.8ex]
+                   &upstream       &downstream        &design         &use     &         \\
+   structure       &basin          &basin             & capacity      &manCon  & w\_flow \\
+  \hline
+  C10A             &lo              &L8               &20000.0        &1       &0.1 \\
+  S352             &lo              &L10L12           &20000.0        &1       &0.1 \\
+  S351             &lo              &nnrHills         &20000.0        &1       &0.1 \\
+  S354             &lo              &umiami           &20000.0        &1       &0.05\\ 
+  C10              &lo              &ebwcd            &20000.0        &1       &0   \\
+  C12              &lo              &eswcd            &20000.0        &1       &0   \\
+  C12A             &lo              &closter          &20000.0        &1       &0   \\
+  C4A              &lo              &ssdd             &20000.0        &1       &0   \\
+  S236             &lo              &sfcd             &20000.0        &1       &0   \\
+  S5AE             &L8              &C51W             &20000.0        &1       &0.1 \\
+  L8canal2basin    &L8              &L8basin          &20000.0        &1       &0   \\
+  CWPB2            &L8              &dummyLake        &20000.0        &1       &0   \\
+  S155A            &C51W            &C51              &20000.0        &1       &0.1 \\
+  C51Wcanal2basin  &C51W            &C51WBasin        &20000.0        &1       &0   \\
+  S319             &C51W            &sta1e            &20000.0        &1       &0   \\
+  C51canal2basin   &C51             &C51Basin         &20000.0        &1       &0   \\
+  S155             &C51             &dummyLake        &20000.0        &1       &0   \\
+  S5A              &L10L12          &STA1InflowCanal  &20000.0        &1       &0   \\
+  L10L12toS5ABasin &L10L12          &S5ABasin         &20000.0        &1       &0   \\
+  S2               &nnrHills        &lo               &20000.0        &1       &0   \\
+  G371             &nnrHills        &L5E              &20000.0        &1       &5.0 \\
+  nnr2nnrHills     &nnrHills        &NnrHillsBasin    &20000.0        &1       &0   \\
+  S6               &nnrHills        &STA2InflowCanal  &20000.0        &1       &0.2 \\
+  G370             &nnrHills        &sta34            &20000.0        &1       &0.1 \\
+  S3               &umiami          &lo               &20000.0        &1       &0   \\
+  G373             &umiami          &lmiami           &20000.0        &1       &5.0 \\
+  mc2miaBasin      &umiami          &miamiBasin       &20000.0        &1       &0   \\
+  G372             &umiami          &sta34sc          &20000.0        &1       &0.1 \\
+  G410             &lmiami          &rotenberger      &20000.0        &1       &0.1 \\
+  L4toBigCypRes    &lmiami          &bigCypRes        &20000.0        &1       &0   \\
+  G507             &lmiami          &sta5             &20000.0        &1       &0.1 \\
+  s8               &lmiami          &wca3a            &20000.0        &1       &0   \\
+  L4gap            &lmiami          &dummyLake        &20000.0        &1       &0.001\\
+  S7               &L5E             &wca2a            &20000.0        &1       &0   \\
+  S150             &L5E             &wca3a            &20000.0        &1       &0   \\
+  G407             &L3Canal         &lmiami           &20000.0        &1       &0   \\
+  G353             &L3Canal         &sta6             &20000.0        &1       &0.1 \\
+  \hline                                                                            
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+
+\begin{table}[!htb]
+ \begin{center}
+  \footnotesize
+  \caption{Example of the LP constant structure parameter values (Part 2). }\label{strParaConst_2}
+  \begin{tabular}{p{2.8cm}p{2.5cm}p{2.5cm}p{1.8cm}p{1.5cm}p{1.5cm}}\\[0.8ex]
+                   &upstream       &downstream        &design         &use     &         \\
+   structure       &basin          &basin             & capacity      &manCon  & w\_flow \\
+  \hline
+  basin2L8canal    &L8basin         &L8               &20000.0        &1       &0   \\
+  L8DemandNode     &L8basin         &dummyLake        &20000.0        &1       &0   \\
+  basin2C51Wcanal  &C51WBasin       &C51W             &20000.0        &1       &0   \\
+  C51WDemandNode   &C51WBasin       &dummyLake        &20000.0        &1       &0   \\
+  basin2C51canal   &C51Basin        &C51              &20000.0        &1       &0   \\
+  C51DemandNode    &C51Basin        &dummyLake        &20000.0        &1       &0   \\
+  S5ABasin2L10L12  &S5ABasin        &L10L12           &20000.0        &1       &0   \\
+  S5ABasin2hills   &S5ABasin        &nnrHills         &20000.0        &1       &0   \\
+  C10bp            &ebwcd           &lo               &20000.0        &1       &0   \\
+  ebps             &ebwcd           &L10L12           &20000.0        &1       &0   \\
+  C12bp            &eswcd           &lo               &20000.0        &1       &0   \\
+  esps             &eswcd           &nnrHills         &20000.0        &1       &0   \\
+  C12Abp           &closter         &lo               &20000.0        &1       &0   \\
+  cfps             &closter         &nnrHills         &20000.0        &1       &0   \\
+  C4Abp            &ssdd            &lo               &20000.0        &1       &0   \\
+  sbpsrips         &ssdd            &nnrHills         &20000.0        &1       &0   \\
+  sswestps         &ssdd            &umiami           &20000.0        &1       &0   \\
+  S236bp           &sfcd            &lo               &20000.0        &1       &0   \\
+  sfd5eps          &sfcd            &umiami           &20000.0        &1       &0   \\
+  nnrHills2nnr     &NnrHillsBasin   &nnrHills         &20000.0        &1       &0   \\
+  G328             &NnrHillsBasin   &STA2InflowCanal  &20000.0        &1       &0   \\
+  miaBasin2mc      &miamiBasin      &umiami           &20000.0        &1       &0   \\
+  G402             &rotenberger     &lmiami           &20000.0        &1       &0.1 \\
+  holeyland2lmiami &holeyland       &lmiami           &20000.0        &1       &0.1 \\
+  G136             &L1EBasin        &umiami           &20000.0        &1       &0   \\
+  G406             &L2CBasin        &L3Canal          &20000.0        &1       &0.1 \\
+  G343SUM          &L2CBasin        &sta5             &20000.0        &1       &0   \\
+  usso             &annexBasin      &sta6             &20000.0        &1       &0   \\
+  G600             &ussugarUnit2    &sta6             &20000.0        &1       &0   \\
+  G311             &STA1InflowCanal &sta1e            & 1550.0        &1       &0.1 \\
+  G302             &STA1InflowCanal &sta1w            & 3250.0        &1       &0   \\
+  G300G301         &STA1InflowCanal &wca1             &20000.0        &1       &5.0 \\ 
+  S362             &sta1e           &wca1             & 4200.0        &1       &0   \\
+  G251G310         &sta1w           &wca1             & 3490.0        &1       &0   \\
+  sta2in           &STA2InflowCanal &sta2             &20000.0        &1       &0   \\
+  G338             &STA2InflowCanal &wca1             &20000.0        &1       &5.0 \\
+  G339             &STA2InflowCanal &wca2a            &20000.0        &1       &5.0 \\
+  G335             &sta2            &wca2a            & 3040.0        &1       &0   \\
+  G372HL           &sta34sc         &holeyland        &20000.0        &1       &5.0 \\
+  g380             &sta34sc         &sta34            &20000.0        &1       &0   \\
+  sta34out         &sta34           &lmiami           & 5844.0        &1       &0   \\
+  G344             &sta5            &lmiami           & 1800.0        &1       &0.1 \\
+  sta6out          &sta6            &lmiami           & 1197.0        &1       &0   \\
+  G300G301bf       &wca1            &STA1InflowCanal  &20000.0        &1       &5.0 \\     
+  \hline                                                                            
+  \end{tabular}
+ \end{center}
+\end{table}
+\normalsize
+

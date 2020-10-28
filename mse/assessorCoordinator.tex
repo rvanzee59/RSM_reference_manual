@@ -1,0 +1,118 @@
+\chapter{Assessor Coordinator}
+
+The Management Simulation Engine (MSE) implements methods for a wide
+range of management policies and operational controls for structures
+simulated in the HSE.  Many of these methods have been developed and
+used successfully in legacy models, such as the South Florida Water
+Management Model (SFWMD, 2005) \nocite{sfwmm:2005}, South Florida
+Regional Routing Model (Trimble, 1986) \nocite{trimble:86} and the
+Upper Kissimmee Chain of Lakes Model (Fan, 1986) \nocite{fan:86}.  The
+\emph{assessor coordinator} is used to implement these legacy methods
+in the MSE.
+
+The assessor coordinator supervises a set of WCU assessors that are
+designed to quantify water supply and flood control needs, and specify
+control structure releases in the MSE network. Water control units are
+HSE water bodies that are managed as discrete entities in the MSE
+Nework. A water control unit (WCU) can be a lake, basin, canal reach
+(assembly of canal segments), or mesh (assembly of cells). The
+regional water supply and flood control needs are met by routing water
+through the MSE Network with coordinated releases through the WCU's
+inlet and outlet control structures. A control structure is an HSE
+water mover paired with a controller and it is represented in the MSE
+Network by an MSE Node. The controller serves as the interface between
+the HSE and MSE.
+
+The WCU assessors follow these steps to set control structure releases
+at MSE Nodes:
+
+\begin{enumerate}
+ \item Quantify water supply and flood control needs for the WCU;
+ \item Distribute water supply and flood control needs to the WCU
+   inlet and outlet MSE Nodes;
+ \item Limit MSE Node releases based infrastructure and policy
+   constraints; and
+ \item Impose MSE Node release on the corresponding HSE water mover
+   through the controller.
+ \end{enumerate}
+
+Water supply and flood control releases are subject to infrastructure
+and policy constraints. Infrastructure constraints include water
+mover capacity, design capacity and limited storage capacity upstream
+or downstream of the control structure.  Policy constraints reflect
+local and regional management strategies for optimizing system
+performance, resolving conflicts between competing uses, and achieving
+specified management objectives.
+
+Water management policies in the assessor coordinator can be
+implemented in a variety of ways.  A rule or policy that is regional
+in scope and spans multiple WCUs can be simulated using decision trees
+(see Chapter \ref {chapter:RegionalManager}) using a management
+constraint (``manCon'').  Management constraints are assigned to each
+MSE node and can used to selectively limit flood control and/or water
+supply releases based on landscape type.  Examples include the
+regulation schedule for Lake Okeechobee, where the flood control
+release through an outlet is based on the water level in the lake,
+degree of flooding in the EAA, and water levels in the Water
+Conservation Areas.  Other policies are narrower in scope and can be
+implemented generically at the WCU level.  For example, a policy
+dictates how runoff from a basin is to be distributed across multiple
+outlets. Some policies are unique to a WCU and are simulated using
+customized source code in specialized assessors. For example, the
+pulse release assessor is used to compute the flood control release
+from Lake Okeechobee to the estuary, based on a pulse release
+hydrograph.  Output from a special assessor can be monitored and used
+as input for the assessor coordinator.
+
+\section{WCU Assessors}
+\label{chapter:WaterControlUnitManagement}
+
+Water control units are managed by WCU assessors to meet user defined
+flood control / water supply objectives.  WCU assessors are designed
+to quantify the water supply and flood control needs for the WCU and
+supervise the operational response to these needs at the WCU's inlets
+and outlets.  A variety of WCU assessors have been developed to
+simulate the needs of different landscapes (e.g., natural,
+agricultural and urban) and implement decision making processes that
+manage the control structures.
+
+Since the simulated inlet and outlet releases from a WCU affect the
+state of the upstream and downstream WCUs, the order in which WCU
+assessors are processed is important.  The assessor coordinator
+manages the sequencing by placing the WCU assessors in water supply
+and flood control queues and executing their respective Assess()
+methods in the order specified by the user. 
+
+\begin{itemize}
+ \item Water supply assessors \-- Queued from downstream to upstream.
+   Each assessor quantifies the water supply requirement, which
+   includes the local WCU demand, regional demand from downstream
+   water supply outlets, and boundary conditions.  The net water
+   supply requirement for the WCU is distributed to the water supply inlets.
+   The regional water supply requirements are propagated up the MSE Network
+   by repeating this process for the remaining upstream water supply
+   assessors in the queue.
+
+ \item Flood control assessors \-- Queued from upstream to
+   downstream. Each assessor quantifies the flood control
+   requirements, which includes the local WCU excess and regional
+   contributions from the inlets, outlets, and boundary
+   conditions. The outlet releases for the WCU are set by the
+   assessor, considering the excess in the WCU, downstream water
+   supply needs, downstream storage capacity and operational criteria
+   at the outlets. All releases are subject to physical and management
+   constraints. The water supply and flood control requirements for
+   the MSE Network are resolved for the WCU by setting outlet releases
+   and repeating this process for the remaining downstream flood
+   control assessors in the queue.
+\end{itemize}
+
+WCU assessors have default water supply and flood control methods to
+assess rquirements in the water control unit and coordinate
+operational responses at the respective inlets and outlets.
+Alternative methods are available through ``packages'', where the
+default behavior is modified to simulate the specialized management
+and operational control for a particular WCU.  The default and
+alternative methods for water supply and flood control assessors are
+described in the following sections.
+
