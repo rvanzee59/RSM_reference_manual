@@ -1,0 +1,294 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: fig2dev Version 3.2 Patchlevel 5 -->
+<!-- CreationDate: Mon Jun 17 13:55:52 2019 -->
+<!-- Magnification: 1.000 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="4.7in" height="4.2in" viewBox="4488 3615 5665 5022">
+<g style="stroke-width:.025in; stroke:black; fill:none">
+<!-- Text -->
+<text xml:space="preserve" x="8175" y="5250" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Assessors (2)</text>
+<!-- Text -->
+<text xml:space="preserve" x="8250" y="5550" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- special assessors</text>
+<!-- Text -->
+<text xml:space="preserve" x="8250" y="5700" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- WMM assessors</text>
+<!-- Text -->
+<text xml:space="preserve" x="8250" y="5400" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- stat assessor statistics</text>
+<!-- Text -->
+<text xml:space="preserve" x="4875" y="4650" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Regional Mgrs (1)</text>
+<!-- Text -->
+<text xml:space="preserve" x="4950" y="4800" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- HPM Decision Trees</text>
+<!-- Text -->
+<text xml:space="preserve" x="4725" y="6255" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Regional Mgrs (2)</text>
+<!-- Text -->
+<text xml:space="preserve" x="4800" y="6375" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- MSE Decision Trees</text>
+<!-- Text -->
+<text xml:space="preserve" x="4800" y="6525" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- Water Shortage Managemenpt Plans</text>
+<!-- Text -->
+<text xml:space="preserve" x="5100" y="5700" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Assessors (1)</text>
+<!-- Text -->
+<text xml:space="preserve" x="5175" y="5850" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="96" text-anchor="start">- special purpose assessors</text>
+<!-- Line -->
+<polyline points="8775,5775
+8775,5940
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 5775 - 8775 6015-->
+<polygon points="8760 5939
+8775 5999
+8790 5939
+8760 5939
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="8775,6225
+8775,6390
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 6225 - 8775 6465-->
+<polygon points="8760 6389
+8775 6449
+8790 6389
+8760 6389
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="8775,6675
+8775,6840
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 6675 - 8775 6915-->
+<polygon points="8760 6839
+8775 6899
+8790 6839
+8760 6839
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="8775,7125
+8775,7290
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 7125 - 8775 7365-->
+<polygon points="8760 7289
+8775 7349
+8790 7289
+8760 7289
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="8775,7575
+8775,7740
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 7575 - 8775 7815-->
+<polygon points="8760 7739
+8775 7799
+8790 7739
+8760 7739
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="8775,8025
+8775,8190
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 8025 - 8775 8265-->
+<polygon points="8760 8189
+8775 8249
+8790 8189
+8760 8189
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="8775,5041
+8775,4875
+7500,4875
+7500,8550
+7500,8625
+8850,8625
+8850,8475
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 8775 4875 - 8775 5115-->
+<polygon points="8760 5039
+8775 5099
+8790 5039
+8760 5039
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="6750,6900
+7500,6900
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Line -->
+<polyline points="5775,3825
+5775,3990
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 3825 - 5775 4065-->
+<polygon points="5760 3989
+5775 4049
+5790 3989
+5760 3989
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,4275
+5775,4440
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 4275 - 5775 4515-->
+<polygon points="5760 4439
+5775 4499
+5790 4439
+5760 4439
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,4875
+5775,5040
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 4875 - 5775 5115-->
+<polygon points="5760 5039
+5775 5099
+5790 5039
+5760 5039
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,5325
+5775,5490
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 5325 - 5775 5565-->
+<polygon points="5760 5489
+5775 5549
+5790 5489
+5760 5489
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,5925
+5775,6090
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 5925 - 5775 6165-->
+<polygon points="5760 6089
+5775 6149
+5790 6089
+5760 6089
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,6600
+5775,6765
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 6600 - 5775 6840-->
+<polygon points="5760 6764
+5775 6824
+5790 6764
+5760 6764
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,7050
+5775,7215
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 7050 - 5775 7290-->
+<polygon points="5760 7214
+5775 7274
+5790 7214
+5760 7214
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,7500
+5775,7665
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 5775 7500 - 5775 7740-->
+<polygon points="5760 7664
+5775 7724
+5790 7664
+5760 7664
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Line -->
+<polyline points="5775,7950
+5775,8100
+4500,8100
+4500,3675
+5115,3675
+" style="stroke:#000000;stroke-width:7;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 4500 3675 - 5190 3675-->
+<polygon points="5114 3690
+5174 3675
+5114 3660
+5114 3690
+
+" style="stroke:#000000;stroke-width:7;
+fill:#000000;"/>
+<!-- Text -->
+<text xml:space="preserve" x="8100" y="8400" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Check Convergence</text>
+<!-- Text -->
+<text xml:space="preserve" x="8325" y="7950" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Solve Matrix</text>
+<!-- Text -->
+<text xml:space="preserve" x="7800" y="7500" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Stage Based Operations</text>
+<!-- Text -->
+<text xml:space="preserve" x="8100" y="7050" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Supervisors</text>
+<!-- Text -->
+<text xml:space="preserve" x="8100" y="6600" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Controllers</text>
+<!-- Text -->
+<text xml:space="preserve" x="7875" y="6150" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process Assessor Coordinators</text>
+<!-- Text -->
+<text xml:space="preserve" x="5250" y="3750" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Time step loop</text>
+<!-- Text -->
+<text xml:space="preserve" x="5100" y="4200" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">load time series data</text>
+<!-- Text -->
+<text xml:space="preserve" x="5325" y="5250" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process HPMs</text>
+<!-- Text -->
+<text xml:space="preserve" x="5325" y="6975" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">HSE iteration loop</text>
+<!-- Text -->
+<text xml:space="preserve" x="5250" y="7425" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Process PLakes</text>
+<!-- Text -->
+<text xml:space="preserve" x="5325" y="7875" stroke="#000000" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="120" text-anchor="start">Archive Data</text>
+</g>
+</svg>
