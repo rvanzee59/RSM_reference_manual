@@ -1,0 +1,24 @@
+\subsection{Water Control Unit Status}
+
+The status of a water control unit can be assessed using a {\tt
+  WcuStatus} assessor.  In particular, {\tt WcuStatus} assessors are
+used to compute the water supply deficit and flood control excess for
+a water control unit.
+
+The water supply deficit is defined as the volume of water required to
+raise the water level up to a target deficit level.  The computed
+deficit includes the net contribution of the HPM.  The flood control
+excess is the volume of water required to lower the water level down
+to a target flood control.  The computed excess includes net
+contributions of the HPM, inlet inflows, unmanaged outlet releases,
+outlet water supply releases, and boundary flows.  
+
+The {\tt wcuDeficit} and {\tt wcuExcess} modes were designed to assess
+the water supply and flood control status of basins and lakes.  The
+{\tt canalExcess} mode was developed to designed to assess the flood
+control status of particular type of water control unit \-- an EAA
+canal.  The excess in an EAA canal is computed by executing the flood
+control assessors assigned to the agricultural and stormwater
+treatment areas, and reservoirs adjacent to the EAA canal.  Canal
+excess is the summation of flood control releases through the
+respective outlets to the EAA canal.  

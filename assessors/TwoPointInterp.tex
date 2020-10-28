@@ -1,0 +1,45 @@
+\subsubsection{{\tt TwoPointInterp} package}
+
+Water levels in WCU's are commonly managed through regulation
+schedules, where structure operations are based on the state of the
+system and calendar date.  A regulation schedule is comprised of
+``management zones'' that prescribe an operational response for a
+defined set of hydrologic criteria (see Section
+\ref{Section:DecisionTreeManagement}).  If the value returned by a
+target monitor falls between the management zone's top and bottom
+rulecurves, a management constraint (manCon) is set to a specified
+value.  The {\tt TwoPointInterp} package is used to set the manCon to
+a value based on the relative position of the target value in the
+range defined by the two rulecurves.  The manCon values associated
+with each rulecurve are combined by a weighting function:
+
+\begin{align}
+  weight &= 1.0,& target &\ge rulecurve_B \\
+  weight &= \frac{target - rulecurve_C}{rulecurve_B - rulecurve_C},& rulecurve_B &> target > rulecurve_C \\
+  weight &= 0.0, &target &\le rulecurve_C 
+\end{align}
+
+where 
+\begin{center}
+\begin{tabular}{rcl}
+	$weight$	&=& weighting factor					\\
+	$target$	&=& monitored time series value				\\
+	$rulecurve_B$	&=& top value of the range				\\
+	$rulecurve_C$	&=& bottom value of the range				\\
+\end{tabular}
+\end{center}
+
+The weighted manCon value is computed by:
+
+\begin{equation}
+	value_{weighted} = weight * manCon_B + (1-weight) manCon_C
+\end{equation}
+
+where 
+\begin{center}
+\begin{tabular}{rcl}
+	$manCon_B$	&=& managed constraint value for $rulecurve_B$	\\
+	$manCon_C$	&=& managed constraint value for $rulecurve_D$	\\
+\end{tabular}
+\end{center}
+

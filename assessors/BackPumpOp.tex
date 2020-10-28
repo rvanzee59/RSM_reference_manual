@@ -1,0 +1,35 @@
+\subsection{Back Pump Operation}
+
+Flood control operations that discharge excess from an EAA basin to
+Lake Okeechobee (commonly referred to as backpumping) are controlled by
+the volume of runoff in the basin.  In general, backpumping is avoided
+until runoff reaches a critical level.  The {\tt thresholdfrac}
+package computes backpumped flow based on the following criteria:
+
+\begin{equation}
+	Q_{bp} = 0.0, \qquad Q_{runoff} \le Q_{thresh}
+\end{equation}
+
+\begin{equation}
+	Q_{bp} = (Q_{runoff} - Q_{thresh}) * frac, \qquad Q_{runoff} > Q_{thresh}
+\end{equation}
+
+where:
+
+\begin{center}
+\begin{tabular}{rcl}
+	$Q_{bp}$	&=& backpumped flow (cfs)					\\
+	$Q_{runoff}$	&=& basin runoff (cfs)						\\
+	$Q_{thresh}$	&=& threshold basin runoff (cfs)				\\
+	$frac$		&=& fraction of basin runoff above threshold to be backpumped	\\
+\end{tabular}
+\end{center}
+
+Backpumping operations are typically implemented by a Regional Manager
+(see Chapter \ref{chapter:RegionalManager}) where the backpumping flow
+computed by this assessor is monitored by an assessor monitor and used
+to set a management constraint for flood control.  The decision tree
+tests if the lake is above a specified backpump level \-- if it is,
+set the management constraint to 0.0, otherwise, set the management
+constraint to the backpump flow computed by this assessor.
+

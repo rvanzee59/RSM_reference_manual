@@ -1,0 +1,48 @@
+\subsubsection{{\tt fc2estuary} package}
+
+The {\tt fc2estuary} package was developed to manage flood control
+releases from a canal where the inlet is connected to reservoir with
+potentially large flood control releases (e.g., Lake Okeechobee), the
+outlet is connected to an estuary, and the canal receives runoff from
+adjacent basins.  The assessor executes the flood control assessor for
+upstream water control unit (Lake Okeechobee) and retrieves flood
+control release computed for the inlet to the canal.  The assessor
+compares this value to the runoff from the adjacent basins, and uses
+the bigger value to set the maximum release to the estuary.
+Typically, this value is used by a Regional Manager or LP Supervisor
+to set a management constraint for flood control on the outlet to the
+estuary.
+
+
+\subsubsection{{\tt fc2estuary\_alt1} package}
+
+The {\tt fc2estuary\_alt1} package was developed to manage flood
+control releases from a canal where the inlet is connected to
+reservoir with potentially large flood control releases (e.g., Lake
+Okeechobee), the outlet is connected to an estuary, and the canal
+receives runoff from adjacent basins.  The assessor executes the flood
+control assessor for upstream water control unit (Lake Okeechobee) and
+retrieves flood control release computed for the inlet to the canal.
+The {\tt fc2estuary\_alt1} package compares the basin runoff with the
+Lake regulatory release, and returns the larger value only when the
+Lake is making a pulse release or a base flow.  Otherwise, {\tt
+  fc2estuary\_alt1} returns the sum of basin runoff and Lake
+regulatory release.  Typically, the return value is used by a Regional
+Manager or LP Supervisor to set a management constraint for flood
+control on the outlet to the estuary.  
+
+\subsubsection{{\tt fc2estuary\_alt2} package}
+
+The {\tt fc2estuary\_alt2} package was developed to manage flood
+control releases from a canal where the inlet is connected to
+reservoir with potentially large flood control releases (e.g., Lake
+Okeechobee), the outlet is connected to an estuary, and the canal
+receives runoff from adjacent basins.  The assessor executes the flood
+control assessor for upstream water control unit (Lake Okeechobee) and
+retrieves flood control release computed for the inlet to the canal.
+The {\tt fc2estuary\_alt2} package compares the basin runoff with the
+Lake regulatory release, and returns the larger value for any Lake
+regulatory release, including base flows, pulse release and standard
+regulatory releases.  Typically, the return value is used by a
+Regional Manager or LP Supervisor to set a management constraint for
+flood control on the outlet to the estuary.  

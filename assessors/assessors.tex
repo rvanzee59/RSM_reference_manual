@@ -1,0 +1,17 @@
+\section{Special Purpose Assessors}\label{Chapter:specialPurposeAssessor}
+
+Frequently an operational or management decision depends on the
+outcome of a specific assessment or calculation.  The RSM addresses
+this need through special purpose assessors.  These assessors range
+complexity, from a simple statistic, to an operational rule, to a
+fully developed hydrologic model.  At construct time, the special
+purpose assessor is supplied with user defined parameters and state
+variable monitors that it needs to make its assessment.  The results
+of its assessment are available through an assessor monitor.
+
+Special purpose assessors are processed right after Hydrologic Process
+Modules (HPM) but before Regional Managers (see Figure
+\ref{rsmFlowchart}).  Therefore, all special purpose assessors
+calculations are based on beginning of time step state variables with
+the exception of HPM variables.
+

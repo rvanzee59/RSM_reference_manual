@@ -1,0 +1,51 @@
+\subsection{Pulse Release}
+The {\tt std} flood control assessor includes a {\tt pulse} option
+to simulate the pulse releases from a lake through selected flood
+control outlets (see Section \ref{fcassessor:std}).  The {\tt pulse}
+option is used to control flood releases to environmentally sensitive
+areas such as estuaries where salinity levels are important.  Studies
+have shown that flow discharges into estuaries should simulate the
+natural stormwater runoff which occurs in a pulsing discharge manner.
+Discharges at the designated outlet follow a predefined flow
+hydrograph for a specified number of days.
+
+The {\tt pulse} option manages pulse releases from multiple outlets
+(e.g., S77 to the Caloosahatchee Estuary and S308 to the St Lucie
+Estuary).  The pulse release properties for each outlet are defined in
+{\tt pulseRelease} special purpose assessor.  The {\tt pulse} option
+refers to each {\tt pulseRelease} by specifying their respective
+asmtID.
+
+The {\tt pulseRelease} assessor supports multiple levels with flow
+hydrographs that approximate the hydrologic response of a drainage
+basin to storms of varying intensities.  This feature enables lake
+managers to initiate a particular pulse level depending on the
+severity of the flood control condition of the Lake.  The pulse
+release levels are defined by multiple {\tt pulseHydrograph}
+entries.
+
+A pulse release can be initiated in two ways.  The standard option is
+based only on lake stage.  A pulse release zone is associated with
+each {\tt PulseHydrograph}.  The zone is defined by top and bottom
+rulecurves and if the lake stage falls within the zone, a pulse
+release is initiated.  For each day in the pulse release period, the
+outlet release is determined by the pulse release hydrograph.  Once
+initiated, the pulse release is completed, even if the lake stage falls
+outside the zone.
+
+The second option for initiating a pulse release relies on a wse
+schedule defined by a regional manager.  The Water Supply and
+Environmental (WSE) Schedule was developed to manage flood control
+releases for Lake Okeechobee, considering a local and global climatic
+influences.  This option uses a decision tree manager to assess the
+condition of the lake. The decision tree manager traverses through a
+collection of decision branches and until it reaches a terminal point
+where a management constraint is defined for an mseNode.  The WSE
+Decision Tree specifies pulse release at several terminal points.
+These points are assigned to management constraints.  The wse {\tt
+pulseHydrograph} package accesses the decision tree manager to
+determine which (if any) pulse release should be initiated.  As with
+the standard pulse release, once pulse release has been initiated,
+outlet releases are set by the pulse hydrograph for the duration of
+the pulse period.
+
