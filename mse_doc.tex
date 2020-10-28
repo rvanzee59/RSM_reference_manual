@@ -1,0 +1,90 @@
+ \documentclass[10pt]{report}
+ \usepackage{graphicx}
+ \usepackage{rotating}
+ \usepackage{amssymb, amsmath}
+%\documentstyle[12pt,epsf]{report}
+%\documentstyle[epsf]{report}
+%\documentstyle{article}
+ \setlength{\parindent}{7mm}
+ \textheight=8.50in
+ \textwidth=6.5in
+ \parskip = 0.13in
+ \pagestyle{headings}
+%\setcounter{secnumdepth}{3}%
+% to get subsubsections numbered
+%\setcounter{tocdepth}{3}%
+% to get subsubsections in the table of contents 
+%\renewcommand{\baselinestretch}{1.1} 
+%\input epsf
+% following for previewing
+%\voffset -0.6in
+%\hoffset -1.0in
+% Following for print pages
+ \voffset  0.1in
+ \hoffset -1.0in
+%\linespread{1.5}
+ \begin{document}
+%\listoffigures
+%\listoftables
+ \newpage
+ \begin{center}
+
+ \LARGE{\bf RSM Reference Manual }\\~\\~\\~\\
+
+        \Large{Volume 2}\\
+        \Large{Management and Operational Control}\\~\\~\\~\\~\\~\\~\\
+
+ \large{Hydrologic and Environmental Modeling Section\\
+        South Florida Water Management District}\\~\\
+
+ \normalsize{January 14, 2019}
+ \end{center}
+ \begin{figure}[b]
+ \centering
+ \includegraphics[scale=1.]{Graphics/SFWMD_LogoBlue}
+ \end{figure}
+
+ \newpage 
+ \tableofcontents
+ \listoffigures
+ \listoftables
+ \include{mse/mseIntro}
+ \include{mse/WMMAssessor}
+ \include{mse/assessorCoordinator}
+ \include{wcuMgmt/watersupply}
+ \include{wcuMgmt/ws_eaacanal}
+ \include{wcuMgmt/ws_estuary}
+ \include{wcuMgmt/ws_irl}
+ \include{wcuMgmt/ws_losa}
+ \include{wcuMgmt/ws_losaenv}
+ \include{wcuMgmt/ws_std}
+ \include{wcuMgmt/floodcontrol}
+ \include{wcuMgmt/fc_eaacanal}
+ \include{wcuMgmt/fc_irl}
+ \include{wcuMgmt/fc_lkissQTW}
+ \include{wcuMgmt/fc_losaenv}
+ \include{wcuMgmt/fc_s4Runoff}
+ \include{wcuMgmt/fc_std}
+ \include{wcuMgmt/fc_ukiss}
+% \include{mse/supervisors}
+ \include{mse/regionalMgmt}
+ \include{assessors/assessors}
+ \include{assessors/BackPumpOp}
+ \include{assessors/HysteresisSwitch}
+ \include{assessors/linearizeWM}
+ \include{assessors/pulseRelease}
+ \include{assessors/statassessor}
+ \include{assessors/fc2estuary}
+ \include{assessors/TwoPointInterp}
+ \include{assessors/WcuStatus}
+% \include{monitors/monitors}
+% \include{monitors/monitor_hse}
+% \include{monitors/monitor_waterbody}
+% \include{monitors/monitor_hpm}
+% \include{monitors/monitor_wm}
+% \include{monitors/monitor_mse}
+
+\bibliographystyle{plain}
+\bibliography{usersGuideRsmbn}
+
+ \end{document}
