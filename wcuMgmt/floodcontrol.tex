@@ -1,0 +1,93 @@
+\section{Flood Control Assessors}\label{fcAssessor}
+
+The flood control assessor quantifies the volume of excess in the
+water control unit (WCU) and coordinates releases through managed
+outlet structures to meet the WCU's needs as well as the regional
+water supply and flood control requirements from upstream / downstream
+WCU.  The {\tt default} flood control assessor package uses the
+following procedure to assess WCU needs and coordinate its outlet
+structure releases:
+
+\begin{enumerate}
+ \item Compute surplus flow for the water control unit.  Surplus flow
+   is defined as the net inflow from WCU inlets, boundary conditions,
+   unmanaged outlets, and water supply deliveries through WCU outlets.
+
+ \item Compute stress from the WCU's hydrologic process module (HPM).
+
+ \item Compute projected WCU storage, based on surplus flow and HPM
+   stress.
+
+ \item Compute WCU excess, defined as the volume of projected storage
+   above the WCU's flood control level
+
+ \item Set outlet releases to remove WCU excess and deliver water
+   supply to meet downstream WCU needs.  Two options are available for
+   distributing excess to multiple flood control outlets:
+
+  \begin{enumerate}
+
+    \item capacityweighted \-- distribution is weighted, based on the
+      relative flood control capacity of the outlets.
+
+    \item priorityorder \-- distribution is based on priority order
+      assigned to the respective flood control outlets.
+
+  \end{enumerate}
+
+ \item Refine outlet releases.  Tests the downstream impact of the
+   computed outlet flood control release. The degree to which
+   downstream impacts are tested is controlled by the water control
+   unit's fcRecursionLevel:
+
+  \begin{enumerate}
+
+     \item level 0 \-- do not check any downstream water control units
+     \item level 1 \-- only check the flood control assessor
+      immediately downstream of the water control unit
+     \item level 2 \-- recursively check flood control assessors in
+      downstream water control units
+  \end{enumerate}
+\end{enumerate}
+
+Flood control releases at the outlet structures are limited by
+capacity and management conveyance constraints.  If the downstream
+water control unit is a lake with a specified fullLevel, the flood
+control release is further constrained by the downstream storage
+capacity.
+
+The {\tt default} package's refine outlet flood control procedure
+works by executing downstream flood control assessors as dictated by
+the fcRecursionLevel and applying conveyance test to their respective
+flood control outlets.  If the test fails, the flood control release
+is reduced by 10\% and the downstream flood control assessor(s) are
+re-executed.  This cycle of downstream flood control assessment, test,
+and release reduction is repeated until the conveyance test passes or
+the flood control release is reduced to zero.  The conveyance test is
+specified as an {\tt dsConveyTest} for the downstream flood control
+assessor (see Table \ref{WBodyFCProp}).  The following conveyance
+tests are available:
+
+\begin{enumerate}
+ \item HeadTailTest \-- the estimated tail water head is compared with
+   tail water head limit specified in MSE Network.  If estimated tail
+   water head is higher, the test fails.
+
+ \item LocRunoffLim \-- flood control release is limited by the local
+   runoff in the downstream WCU.  Flood control release is adjusted,
+   and test always passes.
+
+ \item CapacityTest \-- flood control release is compared to the flood
+   control capacity based on estimated head water and tail water heads
+   at the outlet.  If release exceeds test capacity, test fails.
+
+ \item NoFCInletRule \-- no test is applied.  Test always passes.
+
+\end{enumerate}
+
+The default flood control assessor methods can be overloaded by
+specifying the {\tt package} attribute and specifying additional
+parameters through nested elements (if needed).  Flood control
+packages for WCU assessors are described and their input
+specifications are defined in the following subsections.
+

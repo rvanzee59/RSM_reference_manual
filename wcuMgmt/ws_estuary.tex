@@ -1,0 +1,22 @@
+\subsection{{\tt estuary} package }
+
+Water supply assessment for an estuary basin can be simulated using
+the {\tt estuary} package.  Estuary water supply requirements are
+imposed on its inlets using minFlow constraints.  The {\tt estuary}
+package is intended to be paired with a default {\tt fcAssessor} (see
+Section \ref{fcAssessor}).  By default, estuary water supply
+requirements are designated as an ``envTarg'' landscape.
+
+The {\tt estuary} package uses the following procedure to assess the
+water supply needs for an estuary:
+
+\begin{enumerate}
+
+ \item Set the water supply requirement for each inlet,
+   based on their individual minFlow constraint.
+
+ \item Reduce water supply requirement in response to capacity and
+ management constraints at each inlet.
+
+\end{enumerate}
+

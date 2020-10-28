@@ -1,0 +1,29 @@
+\subsection{{\tt losaenv} package }\label{losaenvFC}
+
+Flood control assessment for a Lake Okeechobee Service Area (LOSA)
+basin upstream of an estuary can be simulated using the {\tt losaenv}
+package. This flood control assessor is intended to be paired with a
+{\tt losaenv} assessor for water supply (see Section
+\ref{losaenvWS}).
+
+The {\tt losaenv} package uses the following procedure to assess the
+flood control needs in a LOSA basin:
+
+\begin{enumerate}
+
+ \item Compute excess volume, defined as the portion of storage
+   above the WCU's fcLevel.
+
+ \item Compute deficit volume, defined as the portion of storage below
+   the WCU's maintLevel.
+
+ \item Compute excess flow using the following terms: excess and
+   deficit volumes; basin runoff (defined as the sum of the WCU
+   boundary conditions flows); environmental demand release to
+   downstream estuary.
+
+ \item Route environmental and flood control releases through estuary
+   outlet structure, subject to capacity and management constraints.
+
+\end{enumerate}
+

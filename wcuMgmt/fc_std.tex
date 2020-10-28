@@ -1,0 +1,107 @@
+\subsection{{\tt std} package}\label{fcassessor:std}
+
+Standard flood control assessment for lakes and basins can be
+simulated using the {\tt std} package.  The standard assessor can be
+used to simulate the water supply needs for a variety of landscapes,
+using different management options.  
+
+The {\tt std} package uses the following procedure to compute excess
+flow in the WCU, allocate water supply releases to water supply
+outlets and set flood control releases for the flood control outlets:
+
+\begin{enumerate}
+
+ \item Compute excess volume in the WCU.  Excess volume is defined as
+   the portion of projected storage that exceeds the flood control
+   level specified for the WCU.  The projected WCU storage includes
+   flow terms from inlet structure, unmanaged outlet structures,
+   boundary conditions and HPM stressors.
+
+ \item Apply optional lag fraction based on excess versus lag fraction
+   lookup table.
+
+ \item Route water supply releases to water supply outlets.  The water
+   supply allocation is based on the ratio of available supply to the
+   total water supply requirement.  Available water supply is defined
+   as the volume of projected storage that exceeds the storage at the
+   {\tt resLevel}.  If demand exceeds available supply, an allocation
+   fraction is applied to all water supply releases.  
+
+ \item Compute optional pulse flood control release.  Test the outlet
+   nodes that have been designated as pulse release nodes.  If they
+   are active, set pulse release to current value in the pulse release
+   hydrograph, subject to conveyance limitations.  
+
+ \item Route remaining excess flow to the flood control outlets using
+   one of the following {\tt excessDist} options:
+
+ \begin{enumerate}
+  
+  \item {\tt priorityOrder} (default) \-- releases to flood control
+    outlet structures are computed in priority order.  Projected head
+    in the WCU is updated after each flood control release, based on
+    the volume that remains in storage.  The flood control release for
+    each outlet is constrained by volume of remaining excess flow,
+    outlet capacity (physical and design), flood control management
+    constraints and available storage downstream.
+
+  \item {\tt fcWeight} \-- excess flow is apportioned to flood control
+    outlets based on a specified weighting factor.  The flood control
+    release for each outlet is constrained outlet capacity (physical
+    and design), flood control management constraints and available
+    storage downstream.
+
+  \item {\tt fcWeightDRE} \-- excess flow is apportioned to flood control
+    outlets based on a specified weighting factor.  The flood control
+    release for each outlet is constrained outlet capacity (physical
+    and design), flood control management constraints and available
+    storage downstream.  If there is remaining excess flow, it is
+    distributed to the outlets, based on their remaining capacity.
+
+  \item {\tt rungeKutta} \-- The Runge\--Kutta approximation method is
+    used to compute flood control releases from head dependent outlet
+    structures.  
+
+  \item {\tt dsArea} - excess flow is apportioned to flood control outlets
+    based on the area of the receiving water body.  The flood control
+    release for each outlet is constrained outlet capacity (physical
+    and design), flood control management constraints and available
+    storage downstream.
+
+  \item {\tt capacityWeighted} \-- excess flow is apportioned to flood
+    control outlets using on a weighting factor based on the relative
+    capacity of the flood control outlets.  The flood control release
+    for each outlet is constrained outlet capacity (physical and
+    design), flood control management constraints and available
+    storage downstream.
+
+ \end{enumerate}
+
+\end{enumerate}
+
+The standard assessor for flood control simulates a number of
+management options.  Selected outlets can be designated as pulse
+release nodes by using the {\tt -pulse} package modifier.  Runoff
+removal rates from the WCU can be controlled using the {\tt -lag} or
+{\tt -lagdepth} package modifier (e.g. {\tt package="std-pulse"}, {\tt
+  package="std-lag"}).
+
+\textbf{\underline{Known Limitations}.}  
+
+\begin {enumerate} 
+
+ \item Does not support the recursive checking for downstream
+ conveyance constraints as computed by the {\tt default}'s
+ RefineOutletQFC() method.
+
+ \item The {\tt std} flood control and water supply assessors can not
+ be guaranteed to work with other assessor packages or types because
+ other water supply assessors may set their inlet flows and other
+ flood control assessors generally do not assume responsibility for
+ setting outlet water supply releases.  For now, the {\tt std}
+ assessors are designed to work with each other as well as the {\tt
+ eaaCanal} assessors.
+
+\end{enumerate}
+
+

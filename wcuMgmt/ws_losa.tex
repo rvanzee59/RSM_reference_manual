@@ -1,0 +1,25 @@
+\subsection{{\tt losa} package }
+
+Water supply assessments for an agricultural basin in the Lake
+Okeechobee Service Area (LOSA) can be simulated using the {\tt losa}
+packages.  The {\tt losa} package uses following procedures to manage
+a LOSA basin for water supply:
+
+\begin{enumerate}
+
+ \item Set basin water supply requirement to predefined time series
+  for agricultural demand and set flow for the designated demand
+  outlet node.  By default, the water supply requirement is designated
+  as an ``ag'' landscape.
+
+ \item Sum basin boundary condition flows.
+
+ \item Compute regional water supply requirement (basin demand -
+   boundary flows), subject to management and conveyance constraints
+   and available storage in the lake.
+
+ \item Reduce water supply release on demand outlet node if demand
+   exceeds available supply.
+
+\end{enumerate}
+

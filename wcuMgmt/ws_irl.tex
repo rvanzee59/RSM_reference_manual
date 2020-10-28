@@ -1,0 +1,47 @@
+\subsection{{\tt irl} package } \label{irlpackagews}
+
+Water supply assessment in the Indian River Lagoon (IRL) basins can be
+simulated using the {\tt irl} package.  The {\tt irl} package
+simulates the basin interaction with a reservoir, an optional upstream
+basin and a downstream estuary basin.  The {\tt irl} water supply
+package is intended to be paired with a {\tt irl} assessor for flood
+control (see Section \ref{irlpackagefc}).
+
+The {\tt irl} package uses the following procedure to assess the water
+supply needs for an IRL basin:
+
+\begin{enumerate}
+
+ \item Set basin water supply requirement to the predefined time
+   series for agricultural demand and set flow for the designated
+   demand outlet node.
+
+ \item Set environmental target to the minFlow constraint placed on
+   the estuary outlet.
+
+ \item Compute basin runoff, defined as the sum of the basin boundary
+   conditions flows.
+
+ \item Compute net demand for basin (basin demand + environmental
+   demand - basin runoff).
+
+ \item Use reservoir to meet net basin demand, subject to capacity and
+   management constraints, reservoir supply (volume above specified
+   reserve level). Reservoir can be either multipurpose or
+   agricultural only, depending on the purpose specification for the
+   reservoir pump.
+
+ \item Compute reductions to agricultural and estuary deliveries due
+   to limited water supply.  Reductions are prorated, based on the
+   agricultural to estuary demand ratio.
+
+ \item Set water supply requirement for the estuary outlet and adjust
+   release at the demand nodes to compensate for reductions in water
+   supply delivery.
+
+\end{enumerate}
+
+Runoff from the optional upstream basin is not routed by the water
+supply assessor.  The upstream basin runoff is added to basin excess
+and routed by the {\tt irl} assessor for flood control.  
+

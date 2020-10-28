@@ -1,0 +1,38 @@
+\subsection{{\tt s4Runoff} package }
+
+Flood control assessment for the S4 drainage basin (near Lake
+Okeechobee) can be simulated using the {\tt s4Runoff} package. 
+
+The {\tt s4Runoff} package uses the following procedure to assess the
+flood control needs in the S4 basin:
+
+\begin{enumerate}
+
+ \item Compute surplus flow in the WCU.  This includes inflows from
+   inlet nodes and boundary conditions and outflows from unmanaged and
+   water supply releases from outlet nodes.
+
+ \item Retrieve water supply delivery computed for the outlet from
+   Lake Okeechobee.
+
+ \item Compute HPM stress from the WCU's hydrologic process module.
+
+ \item Use surplus flow, water supply delivery and HPM stress to
+   compute projected WCU storage.
+
+ \item Compute excess volume in the WCU, defined as the portion of
+   projected storage above the WCU's flood control level
+
+ \item Set outlet flood control releases.  If the water level in Lake
+   Okeechobee is below the backpump threshold, backpump to excess to
+   the Lake, subject to conveyance and management constraints (release
+   to Caloosahatchee basin is zero).  Otherwise, route a specified
+   fraction of the excess to the Caloosahatchee basin, subject to
+   conveyance and management constraints (the remaining balance is
+   backpumped to the Lake, subject to conveyance and management
+   constraints).
+
+ \item Update water supply demand node.
+
+\end{enumerate}
+

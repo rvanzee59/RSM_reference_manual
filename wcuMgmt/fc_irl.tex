@@ -1,0 +1,41 @@
+\subsection{{\tt irl} package} \label{irlpackagefc}
+
+Flood control assessment for an Indian River Lagoon (IRL) Basin can be
+simulated using the {\tt irl} package. The {\tt irl} package manages
+interactions between the basin and a multipurpose reservoir, optional
+inlet STA, and an optional alternative outlet structure.  This flood
+control assessor is intended to be paired with a {\tt irl} assessor
+for water supply (see Section \ref{irlpackagews}).
+
+The {\tt irl} package uses the following procedure to assess the flood
+control needs in an IRL basin:
+
+\begin{enumerate}
+
+ \item Compute excess volume, defined as the portion of storage above
+   the WCU's fcLevel.
+
+ \item Compute deficit volume, defined as the portion of storage below
+   the WCU's maintLevel.
+
+ \item Compute excess flow in the basin using the following terms:
+   excess and deficit volumes; basin runoff (defined as the sum of WCU
+   boundary condition flows); flood control release from optional STA;
+   and environmental demand release to downstream estuary;
+
+ \item Redirect excess flow to offset environmental deficit to the
+   estuary.
+
+ \item Redirect excess flow to offset water supply releases from reservoir.
+
+ \item Route remaining excess flow to the reservoir, subject to
+   capacity, management and storage constraints.
+
+ \item Route remaining excess flow to optional alternative outlet,
+   subject to capacity and management constraints.
+
+ \item Route remaining excess to the estuary, subject to capacity and
+   management constraints.
+
+\end{enumerate}
+

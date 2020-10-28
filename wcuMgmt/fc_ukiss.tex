@@ -1,0 +1,37 @@
+\subsection{{\tt ukiss} package }
+
+Flood control assessment for Lake Cypress and Hatchineha in the Upper
+Kissimmee Chain of Lakes can be simulated using the {\tt ukiss}
+package.  Since the outlet from both these lakes is uncontrolled, the
+{\tt ukiss} package includes a volume check that limits the flood
+control release to the volume of water that would lower its lake level
+to the downstream lake level.
+
+The flood control needs in the {\tt ukiss} package are assessed
+through the following steps:
+\begin{enumerate}
+ \item Compute surplus flow in the WCU.  This includes inflows from
+   inlet nodes and boundary conditions and outflows from unmanaged and
+   water supply releases from outlet nodes.
+
+ \item Compute HPM stress from the WCU's hydrologic process module.
+
+ \item Use surplus flow and HPM stress to compute projected WCU
+   storage.
+
+ \item Set flood control level to the maximum outlet tailwater level.
+
+ \item Compute excess in the WCU, defined as the volume of projected
+   storage above the flood control level
+
+ \item Set outlet flood control releases The {\tt ukiss} package
+   uses the same release methods, with the same options, as the {\tt
+   default} fcAssessor package.
+
+ \item Refine outlet flood control releases The {\tt lkissQTW} package
+   uses the same refine methods, with the same options, as the {\tt
+   default} fcAssessor package.  
+
+\end{enumerate}
+
+

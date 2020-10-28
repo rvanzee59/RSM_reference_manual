@@ -1,0 +1,87 @@
+\subsection{{\tt std} package}
+
+Standard water supply assessment for lakes and basins can be
+simulated using the {\tt std} package.  The standard assessor can be
+used to simulate the water supply needs for a variety of landscapes,
+using different management options.  
+
+The {\tt std} package uses the following procedures to compute water
+supply requirement for the lake or basin and quantify the unmet water
+supply requirements to be met by regional deliveries through the
+inlets:
+
+\begin{enumerate}
+ \item Compute local water supply requirement.  The default method
+   defines water supply requirement as the inflow needed to raise the
+   water level up to the specified maintenance level.  This includes
+   net contribution from the HPM.  The local water supply requirement
+   can also be based on a preprocessed time series using the {\tt
+   -predef} package modifier (e.g. {\tt package="std-predef"}).
+
+ \item Sum boundary condition flows, outflow from unmanaged outlets,
+   and inflow from unmanaged inlets.
+
+ \item Compute unmet water supply requirement.
+
+ \item Compute optional environmental inflow target \-- Inflow targets
+   are typically defined for Stormwater Treatment Areas (STA's) and
+   are designated as deliveries to an ``envTarg'' landscape.  The
+   following options are available to compute the inflow target:
+
+   \begin{enumerate}
+
+    \item {\tt flow} - The user defines an outlet flow time series
+      target for the STA outlet.  The inflow time target is the sum of
+      the outlet time series plus the flow required to ``prime'' the
+      STA, i.e., the volume of inflow needed to raise water level up
+      to the {\tt fcLevel}.
+
+    \item {\tt stage} - The inflow target is the inflow required to
+      raise the water level up to the STA's {\tt fullLevel}.
+   \end{enumerate}
+
+ \item Set regional water supply requirements by distributing the
+   unmet water supply demands to the water supply inlets. The
+   following {\tt demandDist} options are available:
+
+   \begin{enumerate}
+
+   \item {\tt equal} - distributes unmet water supply requirement to
+     the water supply inlets based on their relative available
+     conveyance capacity.
+
+   \item {\tt retReplace} - unmet water supply requirement is limited
+     to the net reference evapotranspiration computed by the HPM.
+     Unmet water supply requirement is distributed to the water supply
+     inlets based on their relative available capacity or by the {\tt
+     wsWeight} factor specified for the respective water supply
+     inlets.
+     
+   \end{enumerate}
+\end{enumerate}
+
+A package modifier is used to designate the landscape type for the
+computed water supply delivery.  This becomes important when the water
+supply distribution from upstream sources is prioritized based on
+landscape type.  A package modifier is formed by inserting a
+recognized landscape type after {\tt std-} in the package
+specification.  The water supply deliveries are recognized for the
+following landscape types:
+
+\begin{itemize}
+
+  \item {\tt std-ag} \-- agricultural areas (default).
+
+  \item {\tt std-env} \-- maintenance flows to environmentally
+    sensitive lands (e.g., stormwater treatment areas, water
+    conservation areas, wildlife management areas, etc).
+
+  \item {\tt std-urban} \-- high to low density urban areas.
+
+  \item {\tt std-tribe} \-- tribal lands.
+
+  \item {\tt std-envTarg} \-- target flows to environmentally sensitive
+  areas (e.g. estuaries).
+
+\end{itemize}
+

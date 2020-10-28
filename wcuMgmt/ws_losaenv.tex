@@ -1,0 +1,42 @@
+\subsection{{\tt losaenv} package }\label{losaenvWS}
+
+Water supply assessment in the Lake Okeechobee Service Area (LOSA)
+basin that is upstream of an estuary basin can be simulated using the
+{\tt losaenv} package.  These basins have agricultural water supply
+requirement and are not connected to an upstream source, i.e., they do
+NOT have a direct connection to Lake Okeechobee.  Runoff from the
+basin can be used to meet environmental demand in the downstream
+estuary.  This water supply assessor is intended to be paired with a
+{\tt losaenv} assessor for flood control (see
+Section \ref{losaenvFC}).
+
+The {\tt losaenv} package uses the following procedure to manage a
+basin for water supply:
+
+\begin{enumerate}
+
+ \item Set basin water supply requirement to predefined time series
+ for agricultural demand and set flow for the designated demand outlet
+ node.  By default this water supply requirement is designated as an
+ ``ag'' landscape.
+
+ \item Set environmental water supply requirement using the minFlow
+ constraint placed on the estuary outlet.  By default this water
+ supply requirement is designated as an ``envTarg'' landscape.
+
+ \item Compute basin runoff, defined as the sum of the basin boundary
+   conditions flows.
+
+ \item Compute net demand for basin (basin demand + environmental
+ demand - basin runoff).
+
+ \item Compute reductions to agricultural and estuary deliveries due
+   to limited water supply (i.e., not enough runoff).  Reductions are
+   prorated, based on the agricultural to estuary demand ratio.
+
+ \item Set water supply requirement for the estuary outlet and adjust
+   release at the demand nodes to compensate for insufficient water
+   supply delivery.
+
+\end{enumerate}
+

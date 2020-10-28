@@ -1,0 +1,46 @@
+\section{Water Supply Assessors}\label{wsAssessor}
+
+The water supply assessor quantifies the water supply requirement for
+the WCU and sets the inlet water supply requirements for regional
+water supply deliveries.  The {\tt default} water supply assessor uses
+the following procedure to assess the regional water supply
+requirements for a WCU:
+
+\begin{enumerate}
+ \item Compute local water supply requirement.  This is defined as
+   the inflow required to offset the HPM contribution and raise the
+   WCU's water level up to the maintenance level.
+
+ \item Compute net regional water supply requirement.  This includes
+   terms for outlet water supply requirements, unmanaged outlet flows,
+   flood control inflows, and boundary conditions.
+
+ \item Compute WCU deficit (local plus net regional water supply
+   requirement)
+
+ \item Distribute the WCU deficit by setting the water supply
+   requirement on each water supply inlet.
+
+\end{enumerate}
+
+The default water supply assessor provides two options for
+distributing the WCU deficit to the inlets:
+
+\begin{enumerate}
+
+ \item {\tt equal} \-- distribute water supply deficit to multiple
+   water supply inlets based on their relative available conveyance
+   capacity.
+
+ \item {\tt priorityorder} \-- process the water supply inlets in
+   priority order, fully utilizing each inlet until the deficit has
+   been fully satisfied.  Water supply releases at inlets are limited
+   by capacity and management constraints, and the available storage
+   upstream (based on the upstream reserve level).
+
+\end{enumerate}
+
+The default water supply assessor methods can be overloaded by
+specifying a ``package'' attribute and specifying additional
+parameters through nested elements (if needed).  Water supply packages
+are described in the following subsections.
